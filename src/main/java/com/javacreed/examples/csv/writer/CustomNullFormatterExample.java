@@ -23,40 +23,43 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
-import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.javacreed.api.csv.writer.CsvLine;
 import com.javacreed.api.csv.writer.CsvWriter;
-import com.javacreed.api.csv.writer.DateColumnFormatter;
 import com.javacreed.api.csv.writer.DefaultCsvFormatter;
+import com.javacreed.api.csv.writer.NullColumnFormatterProvider;
 
-public class CustomDateFormatterExample {
+public class CustomNullFormatterExample {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(CustomDateFormatterExample.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(CustomNullFormatterExample.class);
 
   public static void main(final String[] args) throws Exception {
-    final File file = new File(CustomDateFormatterExample.class.getSimpleName() + "-Output.csv");
+    final File file = new File(CustomNullFormatterExample.class.getSimpleName() + "-Output.csv");
     try (CsvWriter csv = new CsvWriter(new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8")))) {
       csv.closeAppendableWhenDone();
 
+      /*
+       * Creates a column formatter provider so that you can customise the formatting of the CSV columns. In this
+       * example, we will be using a custom null formatter. Nulls are replaced by the phrase 'THIS-IS-NULL'. Finally we
+       * need to set the column formatter and sets the CSV formatter
+       */
       final DefaultCsvFormatter.Builder formatter = new DefaultCsvFormatter.Builder();
-      formatter.register(Date.class, DateColumnFormatter.date());
-      formatter.register(DateColumnFormatter.time(), 3);
+      formatter.register(new NullColumnFormatterProvider("THIS-IS-NULL"));
       csv.formatter(formatter.build());
 
       csv.headers("A", "B", "C", "D");
       for (int i = 0; i < 15; i++) {
         final CsvLine line = csv.line();
-        line.setValue("a", new Date());
+        line.setValue("a", "1");
         line.setValue("c", "2");
-        line.setValue("d", System.currentTimeMillis());
-        line.setValue("b", "4");
+        line.setValue("d", "3");
+        line.setValue("b", null); // This will be replaced with: 'THIS-IS-NULL'
       }
     }
 
-    CustomDateFormatterExample.LOGGER.debug("CSV File {} created", file);
+    CustomNullFormatterExample.LOGGER.debug("CSV File {} created", file);
   }
 }

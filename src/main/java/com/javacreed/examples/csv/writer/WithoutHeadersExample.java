@@ -29,37 +29,27 @@ import org.slf4j.LoggerFactory;
 
 import com.javacreed.api.csv.writer.CsvLine;
 import com.javacreed.api.csv.writer.CsvWriter;
-import com.javacreed.api.csv.writer.DefaultCsvFormatter;
-import com.javacreed.api.csv.writer.NullColumnFormatterProvider;
 
-public class CustomNullFormatter {
+public class WithoutHeadersExample {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(CustomNullFormatter.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(WithoutHeadersExample.class);
 
   public static void main(final String[] args) throws Exception {
-    final File file = new File(CustomNullFormatter.class.getSimpleName() + "-Output.csv");
+    final File file = new File(WithoutHeadersExample.class.getSimpleName() + "-Output.csv");
     try (CsvWriter csv = new CsvWriter(new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8")))) {
       csv.closeAppendableWhenDone();
 
-      /*
-       * Creates a column formatter provider so that you can customise the formatting of the CSV columns. In this
-       * example, we will be using a custom null formatter. Nulls are replaced by the phrase 'THIS-IS-NULL'. Finally we
-       * need to set the column formatter and sets the CSV formatter
-       */
-      final DefaultCsvFormatter.Builder formatter = new DefaultCsvFormatter.Builder();
-      formatter.register(new NullColumnFormatterProvider("THIS-IS-NULL"));
-      csv.formatter(formatter.build());
+      csv.columns(4);
 
-      csv.headers("A", "B", "C", "D");
       for (int i = 0; i < 15; i++) {
         final CsvLine line = csv.line();
-        line.setValue("a", "1");
-        line.setValue("c", "2");
-        line.setValue("d", "3");
-        line.setValue("b", null); // This will be replaced with: 'THIS-IS-NULL'
+        line.setValue(0, "1");
+        line.setValue(1, "2");
+        line.setValue(2, "3");
+        line.setValue(3, "4");
       }
     }
 
-    CustomNullFormatter.LOGGER.debug("CSV File {} created", file);
+    WithoutHeadersExample.LOGGER.debug("CSV File {} created", file);
   }
 }
