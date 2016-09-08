@@ -17,38 +17,31 @@
  * limitations under the License.
  * #L%
  */
-package com.javacreed.examples.csv.writer;
+package com.javacreed.examples.csv.reader;
 
+import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.nio.charset.Charset;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.javacreed.api.csv.writer.CsvLine;
-import com.javacreed.api.csv.writer.CsvWriter;
+import com.javacreed.api.csv.reader.CsvLine;
+import com.javacreed.api.csv.reader.CsvReader;
+import com.javacreed.api.csv.reader.CsvReadable;
 
 public class BasicFileExample {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(BasicFileExample.class);
-
   public static void main(final String[] args) throws Exception {
     final File file = new File(BasicFileExample.class.getSimpleName() + "-Output.csv");
-    try (CsvWriter csv = new CsvWriter(new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8")))) {
-      csv.closeAppendableWhenDone();
+    try (Reader reader = new BufferedReader(
+        new InputStreamReader(new FileInputStream(file), Charset.forName("UTF-8")))) {
 
-      csv.headers("A", "B", "C", "D");
-      for (int i = 0; i < 15; i++) {
-        final CsvLine line = csv.line();
-        line.setValue("a", "1");
-        line.setValue("c", "2");
-        line.setValue("d", "3");
-        line.setValue("b", "4");
+      final CsvReader csv = new CsvReader(new CsvReadable(reader));
+      csv.readHeaders();
+      for (CsvLine line; (line = csv.readLine()) != null;) {
+        final String cell = line.getValue("a");
+        System.out.println(cell);
       }
     }
-
-    BasicFileExample.LOGGER.debug("CSV File {} created", file);
   }
 }

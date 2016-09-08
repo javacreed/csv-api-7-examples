@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,7 +30,6 @@ import org.slf4j.LoggerFactory;
 import com.javacreed.api.csv.writer.CsvLine;
 import com.javacreed.api.csv.writer.CsvWriter;
 import com.javacreed.api.csv.writer.DefaultCsvFormatter;
-import com.javacreed.api.csv.writer.NullColumnFormatterProvider;
 
 public class CustomNullFormatterExample {
 
@@ -42,12 +41,12 @@ public class CustomNullFormatterExample {
       csv.closeAppendableWhenDone();
 
       /*
-       * Creates a column formatter provider so that you can customise the formatting of the CSV columns. In this
-       * example, we will be using a custom null formatter. Nulls are replaced by the phrase 'THIS-IS-NULL'. Finally we
-       * need to set the column formatter and sets the CSV formatter
+       * In this example, we will be using a custom null formatter. Nulls are replaced by the phrase 'THIS-IS-NULL'.
+       * Finally we need to set the formatter
        */
       final DefaultCsvFormatter.Builder formatter = new DefaultCsvFormatter.Builder();
-      formatter.register(new NullColumnFormatterProvider("THIS-IS-NULL"));
+      // formatter.register(new NullColumnFormatterProvider("THIS-IS-NULL"));
+      formatter.replaceNullsWith("THIS-IS-NULL");
       csv.formatter(formatter.build());
 
       csv.headers("A", "B", "C", "D");

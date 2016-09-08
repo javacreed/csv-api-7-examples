@@ -23,33 +23,37 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
+import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.javacreed.api.csv.writer.CsvLine;
 import com.javacreed.api.csv.writer.CsvWriter;
+import com.javacreed.api.csv.writer.DefaultCsvFormatter;
 
-public class WithoutHeadersExample {
+public class CustomValueSeparatorExample {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(WithoutHeadersExample.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(CustomValueSeparatorExample.class);
 
   public static void main(final String[] args) throws Exception {
-    final File file = new File(WithoutHeadersExample.class.getSimpleName() + "-Output.csv");
+    final File file = new File(CustomValueSeparatorExample.class.getSimpleName() + "-Output.csv");
     try (CsvWriter csv = new CsvWriter(new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8")))) {
       csv.closeAppendableWhenDone();
 
-      csv.columns(4);
+      final DefaultCsvFormatter.Builder formatter = new DefaultCsvFormatter.Builder();
+      formatter.valueSeparator(";");
+      csv.formatter(formatter.build());
 
+      csv.headers("A", "B", "C", "D");
       for (int i = 0; i < 15; i++) {
         final CsvLine line = csv.line();
-        line.setValue(0, "1");
-        line.setValue(1, "2");
-        line.setValue(2, "3");
-        line.setValue(3, "4");
+        line.setValue("a", new Date());
+        line.setValue("c", "Hello;World");
+        line.setValue("b", "4");
       }
     }
 
-    WithoutHeadersExample.LOGGER.debug("CSV File {} created", file);
+    CustomValueSeparatorExample.LOGGER.debug("CSV File {} created", file);
   }
 }
