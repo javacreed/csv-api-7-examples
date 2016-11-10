@@ -33,8 +33,20 @@ import org.slf4j.LoggerFactory;
 import com.javacreed.api.csv.writer.CsvLine;
 import com.javacreed.api.csv.writer.CsvWriter;
 
+/**
+ * Provides an example that shows how to write a collection of objects as a CSV file.
+ * <p>
+ * The CSV output is saved in file: {@code CollectionOfObjectsExample-Output.csv}
+ *
+ * @author Albert
+ */
 public class CollectionOfObjectsExample {
 
+  /**
+   * A basic value object used to demonstrate how to format collections of objects into CSV
+   *
+   * @author Albert Attard
+   */
   private static class Person {
     private final String name;
     private final String surname;
@@ -64,18 +76,28 @@ public class CollectionOfObjectsExample {
   public static void main(final String[] args) throws Exception {
     final File file = new File(CollectionOfObjectsExample.class.getSimpleName() + "-Output.csv");
     try (CsvWriter csv = new CsvWriter(new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8")))) {
+      /* Tell the CSV writer to also close the output stream when done */
       csv.closeAppendableWhenDone();
 
+      /* Create the collection to be formatted into CSV */
       final List<Person> persons = new ArrayList<>();
       persons.add(new Person("Albert", "Attard", "2000-09-01"));
       persons.add(new Person("Mary", "White", "1998-07-28"));
 
-      csv.headers("name", "surname", "dateOfBirth");
+      /* Create the headers */
+      csv.headers("Name", "Surname", "DateOfBirth");
+
+      /*
+       * Write the collection. Note that the headers are all written in lower case. This is a simple example to show
+       * that when using the default headers, the column names are case-insensitive. We do not have a mapper yet, but
+       * this is something which may be added at a later stage.
+       */
       for (final Person person : persons) {
         final CsvLine line = csv.line();
         line.setValue("name", person.getName());
         line.setValue("surname", person.getSurname());
-        line.setValue("dateOfBirth", person.getDateOfBirth());
+        line.setValue("dateofbirth", person.getDateOfBirth());
+        line.write();
       }
     }
 
